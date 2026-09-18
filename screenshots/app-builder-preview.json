@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "ArchPilot",
+      "hasCanvas": false,
+      "bodyTextLen": 3909,
+      "bodyTextHash": "7fd4b8a3b7351b31fae9c7beb1e3a6cf48d1d7478871120583163aa880363ea8",
+      "bodyTextPrefix": "ArchPilot How it works Architecture Reasoning Cost Open console ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "ArchPilot",
+      "hasCanvas": false,
+      "bodyTextLen": 3855,
+      "bodyTextHash": "b81bc1dcb273e59e7e2382b52b29a34d30b6c63d74cb2bf9d7bb67a93359c10a",
+      "bodyTextPrefix": "ArchPilot Deploy a Repository ArchPilot ARCHPILOT Deploy anywher",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}
