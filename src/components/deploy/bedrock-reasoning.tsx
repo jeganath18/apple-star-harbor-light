@@ -3,6 +3,7 @@ import { confidenceLabel } from "@/lib/format";
 import type { Job } from "@/lib/types";
 
 export function BedrockReasoning({ job }: { job: Job }) {
+  console.log(job);
   const info = job.bedrock;
   if (!info?.invoked) {
     if (job.decisionSource === "deterministic") {

@@ -13,7 +13,6 @@ export function DeploymentHistory({ jobs }: { jobs: Job[] }) {
         <span className="col-span-1">Arch</span>
         <span className="col-span-2">Runtime</span>
         <span className="col-span-1">Status</span>
-        <span className="col-span-1">Duration</span>
         <span className="col-span-1">Created</span>
         <span className="col-span-1">Live</span>
       </div>
@@ -43,9 +42,6 @@ export function DeploymentHistory({ jobs }: { jobs: Job[] }) {
               </span>
               <span className="md:col-span-1">
                 <StatusBadge label={String(job.status)} tone={jobStatusTone(String(job.status))} />
-              </span>
-              <span className="font-mono text-2xs text-muted tabular md:col-span-1">
-                {formatDuration(job.durationMs)}
               </span>
               <span className="font-mono text-2xs text-muted md:col-span-1">
                 {formatRelative(job.createdAt)}

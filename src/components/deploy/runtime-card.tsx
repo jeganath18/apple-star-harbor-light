@@ -4,7 +4,7 @@ import type { Job } from "@/lib/types";
 
 export function RuntimeCard({ job }: { job: Job }) {
   if (job.runtimeKind !== "qemu" && !job.qemu?.present) return null;
-  const qemu = job.qemu;
+  const qemu = job.raw.qemu;
   const status = qemu?.status ?? (job.status === "COMPLETED" ? "VALIDATED" : "PENDING");
   const failed = status === "FAILED" || job.runtimeKind === "fallback_x86";
 
@@ -22,7 +22,6 @@ export function RuntimeCard({ job }: { job: Job }) {
         <Meta label="Container architecture" value={qemu?.containerArchitecture ?? job.containerArchitecture ?? "AMD64"} />
         <Meta label="Host architecture" value={qemu?.hostArchitecture ?? job.hostArchitecture ?? "ARM64"} />
         <Meta label="Host" value={qemu?.host ?? "AWS Graviton"} />
-        <Meta label="Instance" value={qemu?.instance ?? job.instanceType ?? "—"} />
         <Meta label="Emulation" value={qemu?.emulation ?? "QEMU/binfmt"} />
         <div className="flex items-end">
           <ArchitectureBadge label="AMD64 → ARM64" tone="qemu" />

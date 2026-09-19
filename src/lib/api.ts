@@ -58,8 +58,7 @@ async function request(path: string, init?: RequestInit): Promise<unknown> {
   if (!base) {
     throw new ApiError({
       title: "ArchPilot control plane is temporarily unavailable.",
-      detail:
-        "VITE_API_BASE_URL is not configured. The dashboard cannot reach the deployment API.",
+      detail: "VITE_API_BASE_URL is not configured. The dashboard cannot reach the deployment API.",
       retryable: false,
     });
   }
@@ -131,12 +130,9 @@ export async function createJob(repoUrl: string): Promise<CreateJobResponse> {
     method: "POST",
     body: JSON.stringify({
       repoUrl,
-      repositoryUrl: repoUrl,
-      repository: repoUrl,
-      githubUrl: repoUrl,
-      region: AWS_REGION,
     }),
   });
+  console.log("Create job response:", json);
   const data = unwrapData(json) ?? (isRecord(json) ? json : {});
   const jobId =
     asString(pick(data, "jobId", "job_id", "id")) ??
@@ -160,7 +156,9 @@ export async function fetchJobs(): Promise<Job[]> {
   try {
     const json = await request("/jobs");
     const list = extractJobList(json);
-    return list.map((item, i) => normalizeJob(item, asString(isRecord(item) ? item.jobId : undefined) ?? `unknown-${i}`));
+    return list.map((item, i) =>
+      normalizeJob(item, asString(isRecord(item) ? item.jobId : undefined) ?? `unknown-${i}`),
+    );
   } catch (err) {
     if (err instanceof ApiError && err.shape.status === 404) return [];
     throw err;
@@ -173,9 +171,6 @@ export async function probeConnection(): Promise<ConnectionState> {
     await request("/jobs");
     return "connected";
   } catch (err) {
-    if (err instanceof ApiError && (err.shape.status === 404 || err.shape.status === 405)) {
-      return "connected";
-    }
     try {
       await request("/health");
       return "connected";
@@ -204,8 +199,7 @@ export function normalizeJob(raw: unknown, fallbackId: string): Job {
       ? data.decision
       : {};
 
-  const jobId =
-    asString(pick(data, "jobId", "job_id", "id")) ?? fallbackId;
+  const jobId = asString(pick(data, "jobId", "job_id", "id")) ?? fallbackId;
 
   const status = normalizeStatus(
     asString(pick(data, "status", "state", "jobStatus", "job_status")),
@@ -228,7 +222,13 @@ export function normalizeJob(raw: unknown, fallbackId: string): Job {
     pick(data, "recommendedRuntime", "recommended_runtime") ?? pick(nested, "recommendedRuntime"),
   );
   const executionArchitecture = asString(
-    pick(data, "executionArchitecture", "execution_architecture", "hostArchitecture", "host_architecture"),
+    pick(
+      data,
+      "executionArchitecture",
+      "execution_architecture",
+      "hostArchitecture",
+      "host_architecture",
+    ),
   );
   const containerArchitecture = asString(
     pick(
@@ -281,7 +281,9 @@ export function normalizeJob(raw: unknown, fallbackId: string): Job {
     completedAt: asString(pick(data, "completedAt", "completed_at")),
     durationMs: asNumber(pick(data, "durationMs", "duration_ms", "duration")),
     message: asString(pick(data, "message", "statusMessage", "status_message")),
-    error: asString(pick(data, "error", "errorMessage", "error_message", "failureReason", "failure_reason")),
+    error: asString(
+      pick(data, "error", "errorMessage", "error_message", "failureReason", "failure_reason"),
+    ),
     errorCode: asString(pick(data, "errorCode", "error_code")),
     logs: normalizeLogs(pick(data, "logs", "buildLogs", "build_logs", "events")),
     stages: normalizeStages(pick(data, "stages", "steps", "pipeline")),
@@ -464,7 +466,12 @@ function normalizeStageState(value: string | undefined): StageState {
   if (v.includes("WARN")) return "WARNING";
   if (v.includes("FAIL") || v.includes("ERROR")) return "FAILED";
   if (v.includes("RUN") || v.includes("PROGRESS") || v.includes("ACTIVE")) return "RUNNING";
-  if (v.includes("COMPLETE") || v.includes("SUCCESS") || v.includes("DONE") || v.includes("SUCCEEDED")) {
+  if (
+    v.includes("COMPLETE") ||
+    v.includes("SUCCESS") ||
+    v.includes("DONE") ||
+    v.includes("SUCCEEDED")
+  ) {
     return "COMPLETED";
   }
   if (v.includes("QUEUE") || v.includes("PEND") || v.includes("WAIT")) return "QUEUED";
@@ -496,7 +503,9 @@ function normalizeBedrock(data: Record<string, unknown>): BedrockInfo | undefine
       return {
         invoked: true,
         confidence: asNumber(pick(data, "confidence")),
-        recommendation: asString(pick(data, "recommendation", "recommendedRuntime", "recommended_runtime")),
+        recommendation: asString(
+          pick(data, "recommendation", "recommendedRuntime", "recommended_runtime"),
+        ),
         explanation: asString(pick(data, "explanation", "reason", "reasoning")),
         evidence: asStringArray(pick(data, "evidence")),
         risks: asStringArray(pick(data, "risks")),
@@ -506,8 +515,7 @@ function normalizeBedrock(data: Record<string, unknown>): BedrockInfo | undefine
   }
   const obj = isRecord(raw) ? raw : {};
   const explanation = asString(
-    pick(obj, "explanation", "reason", "reasoning", "summary", "text") ??
-      pick(data, "explanation"),
+    pick(obj, "explanation", "reason", "reasoning", "summary", "text") ?? pick(data, "explanation"),
   );
   const recommendation = asString(
     pick(obj, "recommendation", "recommendedRuntime", "recommended_runtime"),
@@ -531,7 +539,14 @@ function normalizeCost(value: unknown): CostInfo | undefined {
     pick(value, "actualMonthly", "actual_monthly", "gravitonMonthly", "monthly", "actual"),
   );
   const comparison = asNumber(
-    pick(value, "comparisonMonthly", "comparison_monthly", "x86Monthly", "x86_monthly", "comparison"),
+    pick(
+      value,
+      "comparisonMonthly",
+      "comparison_monthly",
+      "x86Monthly",
+      "x86_monthly",
+      "comparison",
+    ),
   );
   let difference = asNumber(
     pick(value, "differenceMonthly", "difference_monthly", "savings", "delta"),
@@ -562,17 +577,18 @@ function normalizeCost(value: unknown): CostInfo | undefined {
   };
 }
 
-function normalizeQemu(data: Record<string, unknown>, runtimeKind: RuntimeKind): QemuInfo | undefined {
+function normalizeQemu(
+  data: Record<string, unknown>,
+  runtimeKind: RuntimeKind,
+): QemuInfo | undefined {
   const raw = pick(data, "qemu", "emulation", "runtimeValidation", "runtime_validation");
   const obj = isRecord(raw) ? raw : {};
   const present =
     runtimeKind === "qemu" ||
-    Boolean(
-      asString(pick(obj, "status")) ||
-        asBoolean(pick(obj, "used", "enabled", "present")),
-    );
+    Boolean(asString(pick(obj, "status")) || asBoolean(pick(obj, "used", "enabled", "present")));
   if (!present) return undefined;
-  const statusRaw = asString(pick(obj, "status", "validation", "result")) ??
+  const statusRaw =
+    asString(pick(obj, "status", "validation", "result")) ??
     asString(pick(data, "qemuStatus", "qemu_status"));
   const status = normalizeQemuStatus(statusRaw);
   return {
@@ -607,8 +623,11 @@ function normalizeQemuStatus(value: string | undefined): QemuInfo["status"] {
 function normalizeHealth(data: Record<string, unknown>, liveUrl?: string): HealthInfo | undefined {
   const raw = pick(data, "health", "healthCheck", "health_check");
   const obj = isRecord(raw) ? raw : {};
-  const status = asString(pick(obj, "status", "state") ?? pick(data, "healthStatus", "health_status"));
-  const healthy = asBoolean(pick(obj, "healthy")) ??
+  const status = asString(
+    pick(obj, "status", "state") ?? pick(data, "healthStatus", "health_status"),
+  );
+  const healthy =
+    asBoolean(pick(obj, "healthy")) ??
     (status ? /healthy|ok|live|success/i.test(status) : undefined);
   const url = asString(pick(obj, "url", "liveUrl", "live_url")) ?? liveUrl;
   if (!status && healthy === undefined && !url) return undefined;

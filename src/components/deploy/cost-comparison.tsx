@@ -2,30 +2,16 @@ import { formatUsd } from "@/lib/format";
 import type { Job } from "@/lib/types";
 
 export function CostComparison({ job }: { job: Job }) {
-  const cost = job.cost;
-  if (!cost || (cost.actualMonthly === undefined && cost.comparisonMonthly === undefined)) {
-    return (
-      <div className="rounded-lg bg-card p-4 shadow-border">
-        <p className="text-2xs font-medium tracking-wide text-muted uppercase">Cost intelligence</p>
-        <p className="mt-3 text-sm text-foreground">Compute estimate not yet available.</p>
-        <p className="mt-2 text-xs text-muted">
-          ArchPilot only renders cost figures returned by the control plane. Values are never invented in the
-          client.
-        </p>
-      </div>
-    );
-  }
+  const cost = job?.raw?.report?.costComparison;
 
   const actualLabel =
-    cost.actualLabel ??
-    (job.runtimeKind === "qemu"
+    cost?.actualLabel ??
+    (job?.qemu?.present
       ? "Graviton + QEMU"
-      : job.runtimeKind === "native_arm"
-        ? "ARM64 Fargate"
-        : "Selected runtime");
+        : "ARM64 Fargate");
   const comparisonLabel =
-    cost.comparisonLabel ??
-    (job.runtimeKind === "qemu" ? "Equivalent X86 EC2" : "X86 Fargate");
+    cost?.comparisonLabel ??
+    (job?.qemu?.present ? "Equivalent X86 EC2" : "X86 Fargate");
 
   return (
     <div className="rounded-lg bg-card p-4 shadow-border">
@@ -34,30 +20,25 @@ export function CostComparison({ job }: { job: Job }) {
         <div className="rounded-md bg-background px-3 py-3 shadow-border">
           <p className="text-2xs tracking-wide text-subtle uppercase">Actual runtime</p>
           <p className="mt-1 text-xs text-muted">{actualLabel}</p>
-          <p className="mt-2 font-mono text-2xl tabular">{formatUsd(cost.actualMonthly)}</p>
+          <p className="mt-2 font-mono text-2xl tabular">{formatUsd(cost?.arm64MonthlyUsd)}</p>
           <p className="text-2xs text-subtle">/ month</p>
         </div>
         <div className="rounded-md bg-background px-3 py-3 shadow-border">
           <p className="text-2xs tracking-wide text-subtle uppercase">Comparison</p>
           <p className="mt-1 text-xs text-muted">{comparisonLabel}</p>
-          <p className="mt-2 font-mono text-2xl text-muted tabular">{formatUsd(cost.comparisonMonthly)}</p>
+          <p className="mt-2 font-mono text-2xl text-muted tabular">{formatUsd(cost?.x86MonthlyUsd
+)}</p>
           <p className="text-2xs text-subtle">/ month</p>
         </div>
       </div>
-      {cost.differenceMonthly !== undefined ? (
+      {cost?.estimatedSavingsPercent !== undefined ? (
         <p className="mt-4 font-mono text-sm text-infra">
-          Estimated difference {formatUsd(cost.differenceMonthly)}
-          {cost.differencePercent !== undefined
-            ? ` · ${Math.round(cost.differencePercent)}%`
+          Estimated difference {formatUsd(cost?.estimatedSavingsUsd)}
+          {cost?.estimatedSavingsPercent !== undefined
+            ? ` · ${Math.round(cost?.estimatedSavingsPercent)}%`
             : ""}
         </p>
       ) : null}
-      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        {cost.vcpu !== undefined ? <Tiny label="vCPU" value={String(cost.vcpu)} /> : null}
-        {cost.memoryGb !== undefined ? <Tiny label="Memory" value={`${cost.memoryGb} GB`} /> : null}
-        {cost.hoursPerMonth !== undefined ? <Tiny label="Hours/month" value={String(cost.hoursPerMonth)} /> : null}
-        {cost.cpuPrice !== undefined ? <Tiny label="CPU price" value={formatUsd(cost.cpuPrice, 4)} /> : null}
-      </div>
       <p className="mt-4 text-2xs leading-relaxed text-subtle">
         Compute-only estimate. Excludes load balancer, storage, data transfer, public IPv4, monitoring, and
         other AWS charges. Not a guaranteed bill.

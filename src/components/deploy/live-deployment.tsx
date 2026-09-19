@@ -46,7 +46,7 @@ export function LiveDeployment({ job }: { job: Job }) {
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         <Meta label="Region" value={job.region ? `AWS · ${job.region}` : AWS_REGION_FULL} />
         <Meta label="Runtime" value={job.runtimeMode ?? job.recommendedRuntime ?? "—"} />
-        <Meta label="Container" value={job.containerArchitecture ?? "—"} />
+        <Meta label="Summary" value={job.raw.report.summary ?? "—"} />
         <Meta label="Host" value={job.hostArchitecture ?? "—"} />
       </div>
       <div className="mt-4 flex flex-wrap gap-2">

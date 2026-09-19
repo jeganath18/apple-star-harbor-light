@@ -1,1 +1,0 @@
-import{o as e}from"./useStore-CP8wJgJA.js";import{t}from"./app-shell-CQG7r5ce.js";var n=e();function r({title:e,context:r,status:i,action:a,children:o}){return(0,n.jsx)(t,{title:e,context:r,status:i,action:a,children:o})}export{r as t};

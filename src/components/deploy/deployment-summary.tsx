@@ -20,21 +20,9 @@ export function DeploymentSummary({ job }: { job: Job }) {
             />
           </div>
         </div>
-        <Field label="Duration" value={formatDuration(job.durationMs)} mono />
+        <Field label="Health Status" value={job.raw.qemuStatus || job.status=="COMPLETED" ? "Healthy" : ""} mono />
         <Field label="Verdict" value={job.verdict} mono />
         <Field label="Confidence" value={confidenceLabel(job.confidence)} mono />
-        <Field
-          label="Decision source"
-          value={
-            job.decisionSource === "deterministic"
-              ? "Deterministic scanner"
-              : job.decisionSource === "bedrock"
-                ? "Amazon Bedrock"
-                : job.decisionSource === "policy"
-                  ? "Deployment policy"
-                  : "—"
-          }
-        />
         <div>
           <p className="text-2xs tracking-wide text-subtle uppercase">Runtime</p>
           <div className="mt-1 flex flex-wrap gap-1.5">

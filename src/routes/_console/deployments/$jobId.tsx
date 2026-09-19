@@ -105,16 +105,19 @@ function DeploymentPage() {
             <DeploymentSummary job={job} />
             <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
               <DeploymentTimeline stages={deriveStages(job)} />
+              <div>
+                  <CostComparison job={job} />
+                  <div className="mt-4">
+                    <ArchitectureCard job={job} />
+                  </div>
+              </div>
               <div className="flex flex-col gap-4">
-                <ArchitectureCard job={job} />
                 <ArchitectureFlow job={job} />
                 <BedrockReasoning job={job} />
                 <RuntimeCard job={job} />
                 <LiveDeployment job={job} />
-                <CostComparison job={job} />
               </div>
             </div>
-            <BuildLogs logs={job.logs} />
           </>
         ) : null}
       </div>

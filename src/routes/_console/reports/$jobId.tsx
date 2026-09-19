@@ -61,7 +61,7 @@ function ReportPage() {
                 <Item
                   k="Source"
                   v={
-                    job.decisionSource === "deterministic"
+                    job.raw.report.decision.source === "deterministic"
                       ? "Deterministic Scanner"
                       : job.decisionSource === "bedrock"
                         ? "Amazon Bedrock"
@@ -83,18 +83,19 @@ function ReportPage() {
                 </div>
               ) : null}
             </ReportSection>
-
+{/* job?.raw?.report?.scanner?.docker?.baseImages?.image */}
             <ReportSection title="Scanner findings">
-              {job.scanner ? (
+              {job?.raw?.report?.scanner?.confidence ? (
                 <ul className="space-y-1.5 font-mono text-xs text-muted">
-                  {job.scanner.verdict ? <li>Verdict: {job.scanner.verdict}</li> : null}
-                  {job.scanner.evidence.map((e) => (
+                  {job.raw?.report?.scanner?.verdict ? <li>Verdict: {job.raw?.report?.scanner?.verdict}</li> : null}
+                  {job?.raw?.report?.scanner?.docker?.baseImages?.image ? <li>Framework: {job?.raw?.report?.scanner?.docker?.baseImages?.image}</li> : null}
+                  {job.scanner?.evidence.map((e) => (
                     <li key={e}>{e}</li>
                   ))}
-                  {job.scanner.nativeDependencies.map((d) => (
+                  {job.scanner?.nativeDependencies.map((d) => (
                     <li key={d}>Native dependency: {d}</li>
                   ))}
-                  {job.scanner.evidence.length === 0 && job.scanner.nativeDependencies.length === 0 ? (
+                  {job.scanner?.evidence.length === 0 && job.scanner?.nativeDependencies.length === 0 ? (
                     <li>Scanner payload present, no evidence list returned.</li>
                   ) : null}
                 </ul>
@@ -106,15 +107,10 @@ function ReportPage() {
             <BedrockReasoning job={job} />
             <RuntimeCard job={job} />
 
-            <ReportSection title="Health">
-              <p className="font-mono text-sm">
-                {job.health?.status ?? (job.health?.healthy ? "HEALTHY" : "—")}
-              </p>
-            </ReportSection>
 
             <CostComparison job={job} />
 
-            <ReportSection title="AWS resources">
+            {/* <ReportSection title="AWS resources">
               {job.resources && Object.values(job.resources).some(Boolean) ? (
                 <dl className="grid gap-3 sm:grid-cols-2">
                   {job.resources.cluster ? <Item k="Cluster" v={job.resources.cluster} /> : null}
@@ -131,7 +127,7 @@ function ReportPage() {
                   AWS resource identifiers are shown only when the control plane returns them.
                 </p>
               )}
-            </ReportSection>
+            </ReportSection> */}
 
             <LiveDeployment job={job} />
           </>
